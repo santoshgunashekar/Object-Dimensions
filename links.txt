@@ -1,0 +1,19 @@
+https://web.archive.org/web/20131123073926/http://forestjohnson.blogspot.com/2010/01/how-to-measure-size-of-object-using.html
+
+http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0104-65002006000300003
+
+https://www.pyimagesearch.com/2016/02/01/opencv-center-of-contour/
+
+https://www.pyimagesearch.com/2016/02/08/opencv-shape-detection/
+
+https://mmeysenburg.github.io/image-processing/08-edge-detection/
+
+https://stackoverflow.com/questions/46445884/find-corner-coordinates-in-image-using-opencv
+
+https://stackoverflow.com/questions/44752240/how-to-remove-shadow-from-scanned-images-using-opencv
+
+http://dhoiem.web.engr.illinois.edu/publications/cvpr11_shadow.pdf
+
+https://www.geeksforgeeks.org/erosion-dilation-images-using-opencv-python/
+
+Refer these and the references in pre-presentation for literature survey
