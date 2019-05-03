@@ -57,106 +57,97 @@ for i in range(5):
 viewImage(edged)
 #viewImage(threshold) ## 4
 
-width=24
+width=24.97
 pixelsPerMetric=None
 contour =  cv2.findContours(edged.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 cnts = imutils.grab_contours(contour)
 count=1
 cX=0
 cY=0
+prev=0
+#print(len(cnts))
 for c in cnts:
-    s=0
+    print(count)
     if cv2.contourArea(c) < 2000:
+        count=count+1
+        #print('Small')
         continue
+    
+    M = cv2.moments(c)
+    cX1 = int((M["m10"] / M["m00"]))
+    cY1= int((M["m01"] / M["m00"]))
     epsilon = 0.02*cv2.arcLength(c,True)
     approx = cv2.approxPolyDP(c,epsilon,True)
-    print(cv2.minEnclosingCircle(approx))
+    
     
     if count==1:
+        epsilon = 0.0001*cv2.arcLength(c,True)
+        approx = cv2.approxPolyDP(c,epsilon,True)
+        left_most=approx[0]
+        right_most=approx[-1]
+        for i in range(len(approx)):
+            if approx[i][0][0] < left_most[0][0]:
+                left_most=approx[i]
+            if approx[i][0][0] > right_most[0][0]:
+                right_most=approx[i]
+        #print(approx)
+        print(left_most, right_most)
+        print(abs(left_most[0][0]-right_most[0][0])/width)
+        pixelsPerMetric = abs(left_most[0][0]-right_most[0][0])/width
+        center, radius = cv2.minEnclosingCircle(approx)
+        print(radius)
         c=cv2.convexHull(c)
-        # compute the rotated bounding box of the contour compute the center of the contour,
-        # then detect the name of the shape using only the contour
+        
         orig = image.copy()
-        for i in range(1, len(approx)):
-            #sum=sum+dist.euclidean(approx[i-1], approx[i])
-            s=s+dist.euclidean(approx[i-1], approx[i])
-        #sum=sum+dist.euclidean(approx[-1], approx[0])
-        s=s+dist.euclidean(approx[0], approx[-1])
+        s = cv2.arcLength(c,True)
         s1=s/math.pi
-        print(s1)
-        if pixelsPerMetric is None:
-            pixelsPerMetric = s1 / width
+        print(s,s1)
+        #if pixelsPerMetric is None:
+            #pixelsPerMetric = s1 / width
         print(pixelsPerMetric)
         
     else:
-        orig=image.copy()
-        c=cv2.convexHull(c)
-        M = cv2.moments(c)
-        cX1 = int((M["m10"] / M["m00"]))
-        cY1= int((M["m01"] / M["m00"]))
-        if dist.euclidean((cX, cY), (cX1, cY1))<1:
+        if dist.euclidean((cX, cY), (cX1, cY1))<2.2:
             cX=cX1
             cY=cY1
+            count=count+1
+            #print('Same')
             continue
+        center, radius = cv2.minEnclosingCircle(approx)
+        orig=image.copy()
+        c=cv2.convexHull(c)
         print(approx)
         counter=0;
-        for i in range(1, len(approx)):
-            print((dist.euclidean(approx[i-1], approx[i]))/pixelsPerMetric)
-            #s=s+(dist.euclidean(approx[i-1], approx[i]))/pixelsPerMetric
-            #print(approx[i-1])
-            #print(approx[i])
-            tlblX, tlblY = approx[i-1][0][0], approx[i-1][0][1]
-            tlblX1, tlblY1 = approx[i][0][0], approx[i][0][1]
-            print(tlblX, tlblY)
-            print(tlblX1, tlblY1)
-            print('Mid point is' )
-            print((tlblX+tlblX1)/2, (tlblY+tlblY1)/2)
-            #x=int((tlblX+tlblX1)/2) - 15
-            #y=int((tlblY+tlblY1)/2) - 10
-            
-            
-        for i in range(len(approx)):
+        
+        if(len(approx)>=8):
+            s=0
+            for i in range(len(approx)):
+                s=s+(dist.euclidean(approx[i-1], approx[i]))/pixelsPerMetric
+            s1 = cv2.arcLength(c,True)
+            s2=s1/math.pi
+            print(s2/pixelsPerMetric, s/math.pi)
+            print("Hi circle")
+            cv2.circle(orig, (int(center[0]), int(center[1])), int(radius), -1)
+            cv2.putText(orig, "{:.2f}".format(s2/pixelsPerMetric),
+    		(int(center[0]), int(center[1])), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
+            (255, 255, 255), 2)
+            #cv2.putText(orig, "{:.2f}".format((dist.euclidean(approx[0], approx[-1]))/pixelsPerMetric), (int(center[0]), int(center[1])), cv2.FONT_HERSHEY_SIMPLEX, 0.65,(255, 255, 255), 2)
+        else:   
+            for i in range(len(approx)):
+                print(i)
                 tlblX, tlblY = approx[i-1][0][0], approx[i-1][0][1]
                 tlblX1, tlblY1 = approx[i][0][0], approx[i][0][1]
-                #print(tlblX, tlblY)
-                #print(tlblX1, tlblY1)
-                #print('Mid point is' )
-                #print((tlblX+tlblX1)/2, (tlblY+tlblY1)/2)
+                print((dist.euclidean(approx[i-1], approx[i]))/pixelsPerMetric)
                 x=int((tlblX+tlblX1)/2) - 15
                 y=int((tlblY+tlblY1)/2) - 10
+                print('Mid point is' )
+                print((tlblX+tlblX1)/2, (tlblY+tlblY1)/2)
                 cv2.putText(orig, "{:.2f}".format((dist.euclidean(approx[i-1], approx[i]))/pixelsPerMetric),
-		(x, y), cv2.FONT_HERSHEY_SIMPLEX, 
-        0.65, (255, 255, 255), 2)
-                
-        print((dist.euclidean(approx[0], approx[-1]))/pixelsPerMetric)
-        s=s+(dist.euclidean(approx[0], approx[-1]))/pixelsPerMetric
-        tlblX, tlblY = approx[0][0][0], approx[0][0][1]
-        tlblX1, tlblY1 = approx[-1][0][1], approx[-1][0][1]
-        print('Mid point is' )
-        print((tlblX+tlblX1)/2, (tlblY+tlblY1)/2)
-        x=int((tlblX+tlblX1)/2) - 15
-        y=int((tlblY+tlblY1)/2) - 10    
-        
-        if(len(approx)>6):
-            s1=0
-            for i in range(1,len(approx)):
-                s1=s1+(dist.euclidean(approx[i-1], approx[i]))/pixelsPerMetric
-            s1=s1+(dist.euclidean(approx[0], approx[-1]))/pixelsPerMetric
-            s2=s1/math.pi
-            print(s2)
-            print("Hi circle")   
-            
-        cv2.putText(orig, "{:.2f}".format((dist.euclidean(approx[0], approx[-1]))/pixelsPerMetric),
-    		(x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
-            (255, 255, 255), 2)
+		          (x, y), cv2.FONT_HERSHEY_SIMPLEX, 
+                 0.65, (255, 255, 255), 2)
                 
         print("Hey")
         
     cv2.drawContours(orig, [c], -1, (0, 255, 0), 2)
-    
-    M = cv2.moments(c)
-    cX = int((M["m10"] / M["m00"]))
-    cY = int((M["m01"] / M["m00"]))
-    #cv2.putText(image, count, (cX, cY), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
     count=count+1
     viewImage(orig)
