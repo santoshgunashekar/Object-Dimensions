@@ -15,7 +15,7 @@ def viewImage(image):
     cv2.destroyAllWindows()
     
 
-image = cv2.imread('Image\image5.jpeg')
+image = cv2.imread('Programs\Image\image10.jpeg')
 image1 = image
 
 hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)

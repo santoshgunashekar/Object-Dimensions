@@ -24,7 +24,7 @@ def _imshow1(I, theTitle=None):
     if theTitle:
         cv2.title(theTitle);
 	
-image_in = cv2.cvtColor(cv2.imread("i5.jpeg"), cv2.COLOR_BGR2RGB); # Load the glared image
+image_in = cv2.cvtColor(cv2.imread("Image\image7.jpeg"), cv2.COLOR_BGR2RGB); # Load the glared image
 h, s, v = cv2.split(cv2.cvtColor(image_in, cv2.COLOR_RGB2HSV)) # split into HSV components
 
 plt.subplot(1,4,1); _imshow(image_in, "original")

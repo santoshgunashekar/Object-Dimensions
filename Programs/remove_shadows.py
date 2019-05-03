@@ -8,7 +8,7 @@ Created on Sat Apr 13 09:37:49 2019
 import cv2
 import numpy as np
 
-img = cv2.imread('Image\image1.jpeg', -1)
+img = cv2.imread('Image\image7.jpeg', -1)
 
 rgb_planes = cv2.split(img)
 

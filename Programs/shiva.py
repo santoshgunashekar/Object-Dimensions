@@ -26,7 +26,7 @@ def removeNestings(l):
 
 
 #image = cv2.imread('Images\late.png')
-image = cv2.imread('Image/image9.jpeg')
+image = cv2.imread('i8.jpeg')
 #thresh = cv2.threshold(image, 100, 255, cv2.THRESH_BINARY)
 #viewImage(thresh)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -34,8 +34,8 @@ viewImage(gray)
 
 kernel = np.ones((5,5),np.float32)/25
 #for i in range(5):
-#gray = cv2.filter2D(gray,-1,kernel)
-gray = cv2.GaussianBlur(gray, (5, 5), 0)
+gray = cv2.filter2D(gray,-1,kernel)
+#gray = cv2.GaussianBlur(gray, (5, 5), 0)
 viewImage(gray)
 
 
@@ -47,17 +47,17 @@ edged = cv2.Canny(gray, 0.5*ret, ret)
 viewImage(edged)
 
 for i in range(5):
-    edged = cv2.dilate(edged, kernel, iterations=2)
+    edged = cv2.dilate(edged, kernel, iterations=1)
     #viewImage(edged)
 
 
-    edged = cv2.erode(edged, kernel, iterations=2)
+    edged = cv2.erode(edged, kernel, iterations=1)
 viewImage(edged)
 #viewImage(threshold) ## 4
 
 width=24.97
 pixelsPerMetric=None
-contour =  cv2.findContours(threshold.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+contour =  cv2.findContours(edged.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 cnts = imutils.grab_contours(contour)
 count=1
 cX=0
@@ -86,11 +86,11 @@ for c in cnts:
         # order the points in the contour such that they appear in top-left, top-right,
         # bottom-right, and bottom-left order, then draw the outline of the rotated bounding box
         box = perspective.order_points(box)
-        #cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
+        cv2.drawContours(orig, [box.astype("int")], -1, (0, 255, 0), 2)
 
     	 # loop over the original points and draw them
-        #for (x, y) in box:
-            #cv2.circle(orig, (int(x), int(y)), 5, (0, 0, 255), -1)
+        for (x, y) in box:
+            cv2.circle(orig, (int(x), int(y)), 5, (0, 0, 255), -1)
             
 	    # unpack the ordered bounding box, then compute the midpoint between the top-left
         # and top-right coordinates, followed by the midpoint between bottom-left and bottom-right coordinates
@@ -103,10 +103,10 @@ for c in cnts:
         (trbrX, trbrY) = midpoint(tr, br)
 
 	    # draw the midpoints on the image
-        #cv2.circle(orig, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
-        #cv2.circle(orig, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
-        #cv2.circle(orig, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
-        #cv2.circle(orig, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
+        cv2.circle(orig, (int(tltrX), int(tltrY)), 5, (255, 0, 0), -1)
+        cv2.circle(orig, (int(blbrX), int(blbrY)), 5, (255, 0, 0), -1)
+        cv2.circle(orig, (int(tlblX), int(tlblY)), 5, (255, 0, 0), -1)
+        cv2.circle(orig, (int(trbrX), int(trbrY)), 5, (255, 0, 0), -1)
 
 	    # draw lines between the midpoints
         cv2.line(orig, (int(tltrX), int(tltrY)), (int(blbrX), int(blbrY)),
@@ -158,15 +158,14 @@ for c in cnts:
             
             
         
-        if(len(approx)==8):
+        if(len(approx)>=6):
             s1=0
-            avg = s/8.0;
+            avg = s/len(approx);
             for i in range(8):
                 s2=(dist.euclidean(approx[i-1], approx[i]))/pixelsPerMetric
                 s1=s1+(avg-s2)
             print(avg)
-            if(avg<10):
-                cv2.circle(orig, (approx[0][0][0], approx[0][0][1]), 5, (255, 0, 0), -1)
+            if(s1<10):
                 cv2.putText(orig, "{:.2f}".format(avg),(approx[0][0][0], approx[0][0][1]), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 255, 255), 2)
                 print("Hi circle")
                 continue   
@@ -180,7 +179,6 @@ for c in cnts:
                 #print((tlblX+tlblX1)/2, (tlblY+tlblY1)/2)
                 x=int((tlblX+tlblX1)/2) - 15
                 y=int((tlblY+tlblY1)/2) - 10
-                cv2.circle(orig, (x, y), 5, (255, 0, 0), -1)
                 cv2.putText(orig, "{:.2f}".format((dist.euclidean(approx[i-1], approx[i]))/pixelsPerMetric),
 		(x, y), cv2.FONT_HERSHEY_SIMPLEX, 
         0.65, (255, 255, 255), 2)
@@ -193,8 +191,7 @@ for c in cnts:
         print((tlblX+tlblX1)/2, (tlblY+tlblY1)/2)
         x=int((tlblX+tlblX1)/2) - 15
         y=int((tlblY+tlblY1)/2) - 10    
-        
-        cv2.circle(orig, (x, y), 5, (255, 0, 0), -1)
+                
         cv2.putText(orig, "{:.2f}".format((dist.euclidean(approx[0], approx[-1]))/pixelsPerMetric),
     		(x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.65,
             (255, 255, 255), 2)

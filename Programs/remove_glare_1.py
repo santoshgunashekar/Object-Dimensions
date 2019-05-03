@@ -8,7 +8,7 @@ Created on Mon Apr 29 19:12:11 2019
 import cv2
 import numpy
 
-frame = cv2.imread('i3.jpeg')
+frame = cv2.imread('Image\image7.jpeg')
 
 if frame is None:
     print('Error loading image')

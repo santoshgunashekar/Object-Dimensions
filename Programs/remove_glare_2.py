@@ -9,7 +9,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img = cv2.imread('i3.jpeg')
+img = cv2.imread('Image\image7.jpeg')
 img1= cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 dst = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
 
