@@ -1,12 +1,10 @@
+
 from scipy.spatial import distance as dist
 from imutils import perspective
 import numpy as np
 import imutils
 import math
 import cv2
-
-output = [] 
-
 
 def viewImage(image):
     cv2.namedWindow('Display', cv2.WINDOW_NORMAL)
@@ -17,17 +15,9 @@ def viewImage(image):
 def midpoint(ptA, ptB):
 	return ((ptA[0] + ptB[0]) * 0.5, (ptA[1] + ptB[1]) * 0.5)
 
-def removeNestings(l): 
-    for i in l: 
-        if type(i) == list: 
-            removeNestings(i) 
-        else: 
-            output.append(i) 
-    return output
-
 
 #image = cv2.imread('Images\late.png')
-image = cv2.imread('Programs\Image\image10.jpeg')
+image = cv2.imread('Programs\Image\image9.jpeg')
 #thresh = cv2.threshold(image, 100, 255, cv2.THRESH_BINARY)
 #viewImage(thresh)
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -37,7 +27,7 @@ viewImage(gray)
 kernel = np.ones((5,5),np.float32)/25
 #for i in range(5):
 gray = cv2.filter2D(gray,-1,kernel)
-#gray = cv2.GaussianBlur(gray, (5, 5), 0)
+gray = cv2.GaussianBlur(gray, (5, 5), 0)
 viewImage(gray)
 
 
@@ -45,7 +35,7 @@ ret,threshold = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 viewImage(threshold)
 
 
-edged = cv2.Canny(gray, 50, 100)
+edged = cv2.Canny(gray, 0.50*ret, ret)
 viewImage(edged)
 
 for i in range(5):
@@ -58,29 +48,29 @@ viewImage(edged)
 #viewImage(threshold) ## 4
 
 width=24.97
-pixelsPerMetric=None
+pixelsPerMetric=1
 contour =  cv2.findContours(edged.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 cnts = imutils.grab_contours(contour)
 count=1
-cX=0
-cY=0
 prev=0
 #print(len(cnts))
 for c in cnts:
     print(count)
     if cv2.contourArea(c) < 2000:
-        count=count+1
         #print('Small')
         continue
     
     M = cv2.moments(c)
     cX1 = int((M["m10"] / M["m00"]))
     cY1= int((M["m01"] / M["m00"]))
+    print('The midpoints of the contour are:')
+    print(cX1, cY1)
     epsilon = 0.02*cv2.arcLength(c,True)
     approx = cv2.approxPolyDP(c,epsilon,True)
     
     
     if count==1:
+        c=cv2.convexHull(c)
         epsilon = 0.0001*cv2.arcLength(c,True)
         approx = cv2.approxPolyDP(c,epsilon,True)
         left_most=approx[0]
@@ -96,7 +86,6 @@ for c in cnts:
         pixelsPerMetric = abs(left_most[0][0]-right_most[0][0])/width
         center, radius = cv2.minEnclosingCircle(approx)
         print(radius)
-        c=cv2.convexHull(c)
         
         orig = image.copy()
         s = cv2.arcLength(c,True)
@@ -107,12 +96,6 @@ for c in cnts:
         print(pixelsPerMetric)
         
     else:
-        if dist.euclidean((cX, cY), (cX1, cY1))<2.2:
-            cX=cX1
-            cY=cY1
-            count=count+1
-            #print('Same')
-            continue
         center, radius = cv2.minEnclosingCircle(approx)
         orig=image.copy()
         c=cv2.convexHull(c)
@@ -147,7 +130,6 @@ for c in cnts:
                  0.65, (255, 255, 255), 2)
                 
         print("Hey")
-        
     cv2.drawContours(orig, [c], -1, (0, 255, 0), 2)
     count=count+1
     viewImage(orig)
