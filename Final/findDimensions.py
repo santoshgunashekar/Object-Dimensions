@@ -7,6 +7,7 @@
 #import the necessary packages
 import cv2
 from scipy.spatial import distance as dist
+from imutils import contours
 import imutils
 import Final.preprocess as pp
 import math
@@ -33,7 +34,7 @@ def process(image, edged, width):
     #find the contours in the image and store them
     contour =  cv2.findContours(edged.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(contour)
-    
+    (cnts,_)=contours.sort_contours(cnts)
     #counter to distinguish the reference object from other objects in the image
     count=1
     
