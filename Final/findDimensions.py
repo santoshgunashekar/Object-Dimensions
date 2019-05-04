@@ -8,7 +8,7 @@
 import cv2
 from scipy.spatial import distance as dist
 import imutils
-import preprocess as pp
+import Final.preprocess as pp
 import math
 
 def process(image, edged, width):
@@ -21,7 +21,7 @@ def process(image, edged, width):
      edged : uint8
          Pre-processed image
      width: float
-            Width of the leftmost (standard refernce) object
+            Width of the leftmost (standard reference) object
      """
     
     #Read the original image

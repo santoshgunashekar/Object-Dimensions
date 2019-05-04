@@ -1,16 +1,20 @@
-# -*- coding: utf-8 -*-
 """
-Created on Sat May  4 22:10:56 2019
-
-@author: Santosh
+    Module that links both the pre-processing and the 
+    estimating the dimensions of the objects in the image
 """
 
-import preprocess as pp
-import findDimensions as fd
+#import necessary packages
+import Final.preprocess as pp
+import Final.findDimensions as fd
 
-width = 24.
-path = 'Images\image9.jpeg'
-
-        
-edged=pp.init(path)
-fd.process(path, edged, width)
+def init(path, width):
+    """
+    path: str
+         Path and name of the original image
+    width: float
+            Width of the leftmost (standard reference) object
+    """
+    
+    #Get the processed image and pass it to the module that computes dimensions
+    edged=pp.init(path)
+    fd.process(path, edged, width)
