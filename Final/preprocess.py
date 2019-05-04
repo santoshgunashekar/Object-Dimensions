@@ -2,7 +2,6 @@
     Module to preprocess an image - includes conversion to grayscale,
     blurring, thresholding, canny edge detection, dilation and erosion
 """
-
 #import the necessary packages
 import cv2
 import numpy as np
@@ -17,6 +16,7 @@ def viewImage(image, name):
      name : str
          Name of the image that is displayed
      """
+     cv2.namedWindow(name, cv2.WINDOW_NORMAL)
      cv2.imshow(name, image)
      cv2.waitKey(0)
      cv2.destroyAllWindows()
@@ -70,19 +70,16 @@ def process(image):
         edged = cv2.erode(edged, kernel, iterations=1)
     viewImage(edged, 'Dilated and Eroded edges')
     
-    #The processed image is written back in the directory
-    writeImage('Images/processed_image.jpeg', edged)
-    
+    return edged
 
-
-def init(image):  
+def init(path):  
     """
         Method to initialize the path
         Parameters:
         ----------
         image: str
-            Path and name of the image to be pre-processed
+            Path and name of the image to be processed
     """
-    image='Images/image9.jpeg'
-    process(image)
-    
+    image=path
+    edged = process(image)
+    return edged

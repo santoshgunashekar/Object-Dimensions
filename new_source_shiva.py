@@ -48,7 +48,7 @@ viewImage(edged)
 #viewImage(threshold) ## 4
 
 width=24.97
-pixelsPerMetric=1
+pixelsPerMetric=None
 contour =  cv2.findContours(edged.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 cnts = imutils.grab_contours(contour)
 count=1
