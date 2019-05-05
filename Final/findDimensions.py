@@ -32,10 +32,12 @@ def process(image, edged, width):
     pixelsPerMetric=None
     
     #find the contours in the image and store them
-    contour =  cv2.findContours(edged.copy(),cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    contour =  cv2.findContours(edged.copy(),cv2.RETR_TREE,
+                                cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(contour)
     (cnts,_)=contours.sort_contours(cnts)
-    #counter to distinguish the reference object from other objects in the image
+    #counter to distinguish the reference object from
+    #other objects in the image
     count=1
     
     #loop through the contours
@@ -44,14 +46,13 @@ def process(image, edged, width):
         #Get a copy of the original image
         orig=image.copy()
         
-        #Check for convexity defects and correct them
-        c=cv2.convexHull(c)
         
         #Ignore minor contours which are noises mostly
         if cv2.contourArea(c) < 2000:
             continue
 
-        #epsilon here defines how precisely the edges of a contour in the image
+        #epsilon here defines how precisely the edges of a contour
+        #in the image
         epsilon = 0.02*cv2.arcLength(c,True)
         
         #Approximates a contour to another shape with less number of vertices
@@ -60,6 +61,9 @@ def process(image, edged, width):
         #if the contour is the reference object
         if count==1:
             
+            #Check for convexity defects and correct them
+            c=cv2.convexHull(c)
+        
             #epsilon is very fine here since the left-most and righ-most 
             #point of the refernce object is to be determined
             epsilon = 0.0001*cv2.arcLength(c,True)
@@ -92,6 +96,9 @@ def process(image, edged, width):
             #If the contour is a circle
             if(len(approx)>=8):
                 
+                #Check for convexity defects and correct them
+                c=cv2.convexHull(c)
+                
                 #Find the center and minimum radius fitting the contour
                 center, radius = cv2.minEnclosingCircle(approx)
                 
@@ -103,7 +110,8 @@ def process(image, edged, width):
                     
                     #Draw a circle around the contour
                     cv2.circle(orig, (int(center[0]), int(center[1])),
-                               int(radius), (0,255,0), thickness=2, lineType=8, shift=0)
+                               int(radius), (0,255,0), thickness=2, 
+                               lineType=8, shift=0)
                 
                 #Write the dimension of the image
                 cv2.putText(orig, "{:.2f}".format(s2/pixelsPerMetric),
@@ -125,7 +133,8 @@ def process(image, edged, width):
                     y=int((tlblY+tlblY1)/2) - 10
                     
                     #Write the dimensions near the midpoint
-                    cv2.putText(orig, "{:.2f}".format((dist.euclidean(approx[i-1], approx[i]))/pixelsPerMetric),
+                    cv2.putText(orig, "{:.2f}".format((dist.euclidean
+                                (approx[i-1], approx[i]))/pixelsPerMetric),
     		          (x, y), cv2.FONT_HERSHEY_SIMPLEX, 
                      0.65, (0, 0, 255), 2)
                     
